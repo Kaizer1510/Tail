@@ -11,32 +11,38 @@ public class Tail {
         this.charNum = charNum;
     }
 
-    private String extractInput(String inputName) throws IOException {
-        InputStream i = System.in;
-        if (!inputName.equals("")) i = new FileInputStream(new File(inputName));
-        Scanner scanner = new Scanner(i);
-        StringBuilder in = new StringBuilder();
-        while(scanner.hasNextLine()){
-            in.append(scanner.nextLine() + "\n");
-        }
-        scanner.close();
-        return in.toString();
-    }
-
     public String cut(String inputName) throws IOException {
-        String text = extractInput(inputName);
-        String tail = "";
+        InputStream i = System.in;
+        if (inputName != null) i = new FileInputStream(new File(inputName));
+        else System.out.println("Введите текст (ввод оканчивается коммандой \"конец текста\"):");
+        Scanner scanner = new Scanner(i);
+        Deque<String> lineList = new ArrayDeque<String>();
         if (charNum == 0) {
-            List<String> lineList = Arrays.asList(text.split("\n"));
-            int size = lineList.size();
-            if (size > lineNum) lineList = lineList.subList(size - lineNum, size);
-            for (String line: lineList ) {
-                tail = tail + line + "\n";
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (inputName == null && line.equals("конец текста")) break;
+                lineList.add(line + "\n");
+                if (lineList.size() > lineNum) lineList.removeFirst();
+
             }
         } else {
-            int length = text.length();
-            if (length > charNum) tail = text.substring(length - charNum - 1);
+            int weight = 0;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (inputName == null && line.equals("конец текста")) break;
+                weight += line.length();
+                lineList.add(line + "\n");
+                if ( weight - lineList.getFirst().length() > charNum) lineList.removeFirst();
+
+            }
         }
-        return tail;
+        StringBuilder resBuilder = new StringBuilder();
+        for (String line: lineList) {
+            resBuilder.append(line);
+        }
+        String res = resBuilder.toString();
+        if (charNum > 0) res = res.substring(res.length() - charNum - 1);
+        scanner.close();
+        return res;
     }
 }

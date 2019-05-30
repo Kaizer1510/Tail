@@ -8,7 +8,7 @@ public class TailLauncher {
     private List<String> inputList =  new ArrayList<String>();
 
     @Option(name = "-o", metaVar = "String", usage = "output file")
-    private String out = "";
+    private String out = null;
 
     @Option(name = "-c", usage = "number of characters", forbids = "-n")
     private int charNum = 0;
@@ -37,7 +37,7 @@ public class TailLauncher {
             Tail tail = new Tail(lineNum, charNum);
             switch (inputList.size()) {
                 case 0:
-                    res.append(tail.cut(""));
+                    res.append(tail.cut(null));
                     break;
                 case 1:
                     res.append(tail.cut(inputList.get(0)));
@@ -50,7 +50,7 @@ public class TailLauncher {
                     break;
             }
 
-            if (!out.equals("")) {
+            if (out != null) {
                 try {
                     FileWriter writer = new FileWriter(new File(out));
                     writer.write(res.toString());
